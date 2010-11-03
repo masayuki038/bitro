@@ -15,8 +15,8 @@ bitro is java web application freamwork using AspectJ. this is used with AspectJ
 h1. Install
 
 # download bitro-x.x.x.jar.
-# start Eclipse and open *Package Explorer*.
+# start *Eclipse* and open *Package Explorer*.
 # create AspectJ project( or select existing AspectJ project).
 # open context menu on created project and select *AspectJ Tools* -> *Configure AspectJ Build Path...*.
 # click *Aspect Path* tab and *Add JARs* bitro-x.x.x.jar.
-# add build path of created project to bitro-x.x.x.jar.
+# add *Build Path* of created project to bitro-x.x.x.jar.
