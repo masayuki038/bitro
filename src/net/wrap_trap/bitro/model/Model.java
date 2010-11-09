@@ -11,6 +11,10 @@ public abstract class Model implements Serializable{
 		return null;
 	}
 	
+	public void Model(){
+		
+	}
+	
 	public void beforeSave(){	
 	}
 	
