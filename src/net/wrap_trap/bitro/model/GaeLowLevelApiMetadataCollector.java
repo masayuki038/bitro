@@ -4,6 +4,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,28 +20,40 @@ public class GaeLowLevelApiMetadataCollector implements MetadataCollector {
 	private Map<Class<?>, Map<String, PropertyDescriptor>> modelMetadataMap;
 	
 	@Override
-	public void collectMetadata(ProceedingJoinPoint joinPoint) {
-		Class<?> clazz = joinPoint.getTarget().getClass();
-		if(modelMetadataMap.containsKey(clazz)){
+	public void collectMetadata(Class<?> klass) {
+		if(modelMetadataMap == null){
+			ApplicationContainer container = ApplicationContainer.getContainer();
+			container.registerComponent(
+				"net.wrap_trap.bitro.model.GaeLowLevelApiMetadataCollector.modelMetadataMap", 
+				new HashMap<Class<?>, Map<String, PropertyDescriptor>>(), 
+				Scope.APPLICATION
+			);
+		}
+		if(modelMetadataMap.containsKey(klass)){
 			return;
 		}
 		try{
-			BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+			Field[] fields = klass.getDeclaredFields();
+			BeanInfo beanInfo = Introspector.getBeanInfo(klass);
 			Map<String, PropertyDescriptor> propMap = new HashMap<String, PropertyDescriptor>();
 			for(PropertyDescriptor prop : beanInfo.getPropertyDescriptors()){
-				propMap.put(prop.getName(), prop);
+				String name = prop.getName();
+				if(isFieldExists(name, fields)){
+					propMap.put(name, prop);
+				}
 			}
-			if(modelMetadataMap == null){
-				ApplicationContainer container = ApplicationContainer.getContainer();
-				container.registerComponent(
-					"net.wrap_trap.bitro.model.GaeLowLevelApiMetadataCollector.modelMetadataMap", 
-					new HashMap<Class<?>, Map<String, PropertyDescriptor>>(), 
-					Scope.APPLICATION
-				);
-			}
-			modelMetadataMap.put(clazz, propMap);
+			modelMetadataMap.put(klass, propMap);
 		}catch(IntrospectionException e){
 			throw new RuntimeException(e);
 		}
+	}
+	
+	protected boolean isFieldExists(String name, Field[] fields){
+		for(Field field : fields){
+			if(name.equals(field.getName())){
+				return true;
+			}
+		}
+		return false;
 	}
 }
