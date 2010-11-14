@@ -12,14 +12,21 @@ import net.wrap_trap.bitro.annotation.Bind;
 import net.wrap_trap.bitro.container.ApplicationContainer;
 import net.wrap_trap.bitro.container.Scope;
 
-import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.InitializerSignature;
 
-public class GaeLowLevelApiMetadataCollector implements MetadataCollector {
+public abstract aspect GaeModelMetadataCollector {
 
 	@Bind(name="net.wrap_trap.bitro.model.GaeLowLevelApiMetadataCollector.modelMetadataMap")
 	private Map<Class<?>, Map<String, PropertyDescriptor>> modelMetadataMap;
+
+	abstract pointcut metadtaCollect();
 	
-	@Override
+	after() : metadtaCollect(){
+		InitializerSignature initsig =
+			(InitializerSignature)thisJoinPoint.getSignature();
+		collectMetadata(initsig.getDeclaringType());
+	}
+	
 	public void collectMetadata(Class<?> klass) {
 		if(modelMetadataMap == null){
 			ApplicationContainer container = ApplicationContainer.getContainer();

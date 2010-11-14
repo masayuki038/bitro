@@ -20,8 +20,6 @@ public class GaeLowLevelApiMetadataCollectorTest {
 	@Before
 	public void setUp(){
 		ApplicationContainer.init();
-		ApplicationContainer container = ApplicationContainer.getContainer();
-		container.registerComponent(MetadataCollector.class, new GaeLowLevelApiMetadataCollector(), Scope.APPLICATION);
 	}
 	
 	@Test
